@@ -1,6 +1,6 @@
-queryAnimeDirectorDetails = '''
+queryAnimeDirector = '''
 query ($mediaId: Int){
-    media(id: $mediaId){
+    Media(id: $mediaId){
         id
         staff(sort: RELEVANCE,, perPage:25) {
             edges{
@@ -17,23 +17,33 @@ query ($mediaId: Int){
 }
 '''
 
-queryDirectorsWork = '''
-query ($directorId: Int, $page: Int){
-    staff(id: $directorId, page: $page){
+queryDirectorsWorks = '''
+query ($directorId: Int){
+    Staff(id: $directorId){
         id
         staffMedia(sort: SCORE_DESC, page: 1, perPage: 25){
             edges{
                 staffRole
                 node{
-                    int
+                    id
+                    meanScore
                 }
             }
         }
     }
 }
 '''
+
+queryAnimeScore = '''
+query ($animeId: String){
+    Media {
+        meanScore 
+    }
+}
+'''
+
 queryAnimeLists = '''
-    query ($username: String){
+    query ($username: String) {
         MediaListCollection (userName: $username, type: ANIME) {
             lists {
                 status
