@@ -1,12 +1,11 @@
 queryAnimeDirector = '''
 query ($mediaId: Int){
     Media(id: $mediaId){
-        id
-        staff(sort: RELEVANCE,, perPage:25) {
+        staff(sort: RELEVANCE, perPage:25) {
             edges{
-                id
                 role
                 node{
+                    id
                     name{
                         full
                     }
@@ -20,13 +19,11 @@ query ($mediaId: Int){
 queryDirectorsWorks = '''
 query ($directorId: Int){
     Staff(id: $directorId){
-        id
         staffMedia(sort: SCORE_DESC, page: 1, perPage: 25){
             edges{
                 staffRole
                 node{
                     id
-                    meanScore
                 }
             }
         }
@@ -61,9 +58,9 @@ queryAnimeLists = '''
                         meanScore
                         staff(sort: RELEVANCE, page:1, perPage: 6) {
                             edges{
-                                id
                                 role
                                 node {
+                                    id
                                     name {
                                         full
                                     }

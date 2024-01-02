@@ -30,12 +30,12 @@ def main(username: str) -> None:
     animeDF['do_I_Like'] = [True if s >= 70 else False for s in animeDF['score']]
 
     directorDF: pd.DataFrame = director.buildDirectorDF(animeDF)
-    print(directorDF.head())
 
-    d_MeanScores, d_DoILike = director.getDirectorStats(directorDF)  # lists
+    d_MeanScores, d_DoILike = director.getDirectorStats(directorDF['director_id'], animeDF)  # lists
     directorDF['mean_score'] = d_MeanScores
     directorDF['dDoILike'] = d_DoILike
 
+    print(directorDF.head())
     print(genreDF.head(10))
 
 

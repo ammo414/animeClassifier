@@ -1,8 +1,7 @@
 import requests
 import time
 
-from DataGatherAndClean import graphqlqueries2
-from graphqlqueries2 import queryAnimeLists, queryAnimeDirector, queryDirectorsWorks, queryAnimeScore
+from DataGatherAndClean.graphqlqueries import queryAnimeLists, queryAnimeDirector, queryDirectorsWorks, queryAnimeScore
 
 BASE_URL: str = 'https://anilist.co'
 QUERY_URL: str = 'https://graphql.anilist.co'
@@ -100,7 +99,7 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
 
 
 def processAnime(dct, data, dropped: bool = False):
-    entries: list = dct['entries']  # lst[0] = dct['']
+    entries: list = dct['entries']
     for e in entries:
         directorId: int = findDirector(e)
         if dropped:
@@ -139,15 +138,16 @@ def processGenre(dct, data):
 
 def findDirector(entry):
     directorId = 'N/A'
+    print(entry)
     try:
         for staff in entry['media']['staff']['edges']:
             if staff['role'] == 'Director':
-                directorId = staff['id']
+                directorId = staff['node']['id']
                 break
         return directorId
     except KeyError:
         for staff in entry['Media']['staff']['edges']:
             if staff['role'] == 'Director':
-                directorId = staff['id']
+                directorId = staff['node']['id']
                 break
         return directorId
