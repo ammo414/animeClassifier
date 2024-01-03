@@ -1,11 +1,11 @@
 import pandas as pd
 
 import DataGatherAndClean.graphqlqueries
-from DataGatherAndClean import graph, director
+from DataGatherAndClean import processGraph, director
 
 
 def main(username: str) -> None:
-    d: graph.Data = graph.Data(username)
+    d: processGraph.Data = processGraph.Data(username)
     results: dict = DataGatherAndClean.graphqlqueries.get('AnimeLists', 'wannabe414', False)
     lst: list = results['data']['MediaListCollection']['lists']
     dropped: bool
@@ -16,13 +16,9 @@ def main(username: str) -> None:
             continue
         else:
             dropped = False
-        # if status == 'COMPLETED' or status == 'WATCHING':
-        #    graph.processAnime(x, d)
-        #    graph.processGenre(x, d)
-        graph.processAnime(x, d, dropped)
-        graph.processGenre(x, d)
-        graph.processFormat(x, d)
-    print(d.animeData)
+        processGraph.processAnime(x, d, dropped)
+        processGraph.processGenre(x, d)
+        processGraph.processFormat(x, d)
     animeDF: pd.DataFrame = pd.DataFrame(d.returnTable('anime'),
                                          columns=['anime_id', 'title', 'format', 'year_released', 'episodes',
                                                   'mean_score', 'director_id', 'score'])
@@ -34,6 +30,9 @@ def main(username: str) -> None:
                                                   'is_Mecha', 'is_Music', 'is_Mystery', 'is_Psychological',
                                                   'is_Romance', 'is_Slice of Life', 'is_Sports', 'is_Supernatural',
                                                   'is_Thriller'])
+    formatDF: pd.DataFrame = pd.DataFrame(d.returnTable('format'),
+                                          columns=['anime_id', 'TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA',
+                                                   'MUSIC'])
 
     directorDF: pd.DataFrame = director.buildDirectorDF(animeDF)
 
@@ -43,10 +42,8 @@ def main(username: str) -> None:
 
     animeDF.to_csv('animeDF.csv')
     genreDF.to_csv('genreDF.csv')
+    formatDF.to_csv('formatDF.csv')
     directorDF.to_csv("directorDF.csv")
-
-    print(directorDF.head())
-    print(genreDF.head(10))
 
 
 # Press the green button in the gutter to run the script.

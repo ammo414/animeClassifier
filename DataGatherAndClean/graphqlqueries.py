@@ -2,9 +2,10 @@ import time
 
 import requests
 
-from DataGatherAndClean.graph import QUERY_URL
+BASE_URL: str = 'https://anilist.co'
+QUERY_URL: str = 'https://graphql.anilist.co'
 
-queryAnimeDirector = '''
+QUERY_ANIME_DIRECTOR = '''
 query ($mediaId: Int){
     Media(id: $mediaId){
         staff(sort: RELEVANCE, perPage:25) {
@@ -22,7 +23,7 @@ query ($mediaId: Int){
 }
 '''
 
-queryDirectorsWorks = '''
+QUERY_DIRECTORS_WORKS = '''
 query ($directorId: Int){
     Staff(id: $directorId){
         staffMedia(sort: SCORE_DESC, page: 1, perPage: 25){
@@ -38,15 +39,7 @@ query ($directorId: Int){
 }
 '''
 
-queryAnimeScore = '''
-query ($mediaId: Int){
-    Media (id: $mediaId) {
-        meanScore 
-    }
-}
-'''
-
-queryAnimeLists = '''
+QUERY_ANIME_LISTS = '''
     query ($username: String) {
         MediaListCollection (userName: $username, type: ANIME) {
             lists {
@@ -98,13 +91,13 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     varString: str = ""
     match kind:
         case 'AnimeLists':
-            query = queryAnimeLists
+            query = QUERY_ANIME_LISTS
             varString = 'username'
         case 'AnimeDirector':
-            query = queryAnimeDirector
+            query = QUERY_ANIME_DIRECTOR
             varString = 'mediaId'
         case 'DirectorsWorks':
-            query = queryDirectorsWorks
+            query = QUERY_DIRECTORS_WORKS
             varString = 'directorId'
     if rateLimit:
         time.sleep(2)
