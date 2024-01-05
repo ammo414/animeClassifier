@@ -26,7 +26,7 @@ query ($mediaId: Int){
 QUERY_DIRECTORS_WORKS = '''
 query ($directorId: Int){
     Staff(id: $directorId){
-        staffMedia(sort: SCORE_DESC, page: 1, perPage: 25){
+        staffMedia(sort: START_DATE, page: 1, perPage: 25){
             edges{
                 staffRole
                 node{

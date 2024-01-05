@@ -1,3 +1,4 @@
+import pandas
 import pandas as pd
 
 from DataGatherAndClean.graphqlqueries import get
@@ -34,9 +35,11 @@ def getDirectorStats(dIDs: pd.Series, animeDF: pd.DataFrame) -> tuple:
                 worksScores.append(mediaRole['node']['meanScore'])
         #  for each instance of the director_id, find animeID
         #  needs to be sped up
-        worksFromAnimeDF = animeDF.loc[animeDF['director_id'] == directorId]
+        worksFromAnimeDF: pandas.DataFrame = animeDF.loc[animeDF['director_id'] == directorId]
         animeIds = worksFromAnimeDF['anime_id']
         meanScores = worksFromAnimeDF['mean_score']
+        animeIds.reset_index(drop=True)
+        meanScores.reset_index(drop=True)
 
         for iterate, aId in enumerate(animeIds):
             if aId not in directorWorks:
@@ -46,6 +49,7 @@ def getDirectorStats(dIDs: pd.Series, animeDF: pd.DataFrame) -> tuple:
 
         directorsMeanScores.append(calculateDirectorsMeanScore(worksScores))
         directorsDoILike.append(calculateDoILikeDirector(directorWorks, animeDF))
+
     return directorsMeanScores, directorsDoILike
 
 
@@ -83,7 +87,7 @@ def calculateDoILikeDirector(directorsWorks: list, df: pd.DataFrame) -> int:
         return 0
 
 
-def findDirector(entry: dict) -> int:
+def findDirector(entry: dict) -> int | None:
     """
     searches through anime json for the director, if any
     :param entry:
@@ -108,4 +112,7 @@ def findDirector(entry: dict) -> int:
                 chiefDirectorId = staff['node']['id']
     if directorId is None:
         directorId = chiefDirectorId
-    return directorId
+    try:
+        return int(directorId)
+    except TypeError:
+        return directorId  # should always be None, but just in case
