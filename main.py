@@ -10,10 +10,10 @@ def main(username: str) -> None:
     lst: list = results['data']['MediaListCollection']['lists']
     dropped: bool
     for x in lst:
-        if x['status'] == 'DROPPED':
-            dropped = True
-        elif x['status'] == 'PLANNING':
+        if x['status'] == 'PLANNING':
             continue
+        elif x['status'] == 'DROPPED':
+            dropped = True
         else:
             dropped = False
         processGraph.processAnime(x, d, dropped)
@@ -43,7 +43,7 @@ def main(username: str) -> None:
     animeDF.to_csv('animeDF.csv')
     genreDF.to_csv('genreDF.csv')
     formatDF.to_csv('formatDF.csv')
-    directorDF.to_csv("directorDF.csv")
+    directorDF.to_csv('directorDF.csv')
 
 
 # Press the green button in the gutter to run the script.
