@@ -4,7 +4,7 @@ import DataGatherAndClean.graphqlqueries
 from DataGatherAndClean import processGraph, director
 
 
-def main(username: str) -> None:
+def mainDataPrep(username: str) -> None:
     d: processGraph.Data = processGraph.Data(username)
     results: dict = DataGatherAndClean.graphqlqueries.get('AnimeLists', 'wannabe414', False)
     lst: list = results['data']['MediaListCollection']['lists']
@@ -40,12 +40,13 @@ def main(username: str) -> None:
     directorDF['mean_score'] = d_MeanScores
     directorDF['dDoILike'] = d_DoILike
 
-    animeDF.to_csv('animeDF.csv')
-    genreDF.to_csv('genreDF.csv')
-    formatDF.to_csv('formatDF.csv')
-    directorDF.to_csv('directorDF.csv')
+    animeDF.to_csv('animeDF.csv', index=False)
+    genreDF.to_csv('genreDF.csv', index=False)
+    formatDF.to_csv('formatDF.csv', index=False)
+    directorDF.to_csv('directorDF.csv', index=False)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    main('wannabe414')
+    mainDataPrep('wannabe414')
+

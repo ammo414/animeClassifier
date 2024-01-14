@@ -102,6 +102,7 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     if rateLimit:
         time.sleep(2)
     response = requests.post(QUERY_URL, json={'query': query, 'variables': {varString: queryVariable}})
+    print(kind, varString)
     searchResults = response.json()
     if rateLimitHit(searchResults):
         print('hit the rate limit, try again')
@@ -114,4 +115,8 @@ def rateLimitHit(JSONdict: dict) -> bool:
     :param JSONdict: dict deserialized from a json string
     :return: boolean of if we hit the rate limit
     """
-    return JSONdict['data'] is None and JSONdict['errors'][0]['status'] == 429
+    try:
+        return JSONdict['data'] is None and JSONdict['errors'][0]['status'] == 429
+    except KeyError:  # only should occur on 500 errors
+        print('JSONdict')
+        return False

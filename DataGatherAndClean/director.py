@@ -38,8 +38,8 @@ def getDirectorStats(dIDs: pd.Series, animeDF: pd.DataFrame) -> tuple:
         worksFromAnimeDF: pandas.DataFrame = animeDF.loc[animeDF['director_id'] == directorId]
         animeIds = worksFromAnimeDF['anime_id']
         meanScores = worksFromAnimeDF['mean_score']
-        animeIds.reset_index(drop=True)
-        meanScores.reset_index(drop=True)
+        # animeIds.reset_index(drop=True)
+        # meanScores.reset_index(drop=True)
 
         for iterate, aId in enumerate(animeIds):
             if aId not in directorWorks:
@@ -95,6 +95,7 @@ def findDirector(entry: dict) -> int | None:
     """
     directorId = None
     chiefDirectorId = None
+    print(entry)
     try:
         for staff in entry['media']['staff']['edges']:
             if staff['role'].strip() == 'Director':
