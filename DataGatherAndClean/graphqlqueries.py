@@ -8,7 +8,7 @@ QUERY_URL: str = 'https://graphql.anilist.co'
 QUERY_ANIME_DIRECTOR = '''
 query ($mediaId: Int){
     Media(id: $mediaId){
-        staff(sort: RELEVANCE, perPage:25) {
+        staff(sort: RELEVANCE, perPage:25){
             edges{
                 role
                 node{
