@@ -103,10 +103,9 @@ def processAnime(json: dict, data: Data, dropped: bool = False) -> None:
         else:
             score = e['score']
         row: list = [e['media']['id'],
-                       e['media']['title']['english'] or e['media']['title']['romaji'],
+                       e['media']['title']['english'] or e['media']['title']['romaji'] or None,
                        e['media']['format'] or None,
                        e['media']['seasonYear'] or None,
-                       e['media']['episodes'] or None,
                        e['media']['meanScore'] or None,
                        directorId,
                        score]
@@ -114,7 +113,6 @@ def processAnime(json: dict, data: Data, dropped: bool = False) -> None:
         if directorId is None:
             data.appendRequery(row[0])
         data.appendAnime(row)
-        data.reprocessDirector()
 
 
 def processGenre(json: dict, data: Data) -> None:

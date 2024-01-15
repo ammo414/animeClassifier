@@ -11,7 +11,7 @@ def createFullDFRecursive(fullDF: pd.DataFrame, DataFrames: list, mergePoints: l
         return fullDF
     else:
         fullDF = pd.merge(fullDF, DataFrames[0], how='inner', on=mergePoints[0])
-        return createFullDFRecursive(fullDF, DataFrames[1:], mergePoints[1:])
+        return createFullDFRecursive(fullDF, DataFrames[1:], mergePoints[1:]).dropna()
 
 
 def createFullDF(baseDF: pd.DataFrame, joins: list, mergePoints: list) -> pd.DataFrame:

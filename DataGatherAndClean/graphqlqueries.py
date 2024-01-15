@@ -53,7 +53,6 @@ QUERY_ANIME_LISTS = '''
                         }
                         format
                         seasonYear
-                        episodes
                         genres
                         meanScore
                         staff(sort: RELEVANCE, page:1, perPage: 6) {
@@ -102,10 +101,10 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     if rateLimit:
         time.sleep(2)
     response = requests.post(QUERY_URL, json={'query': query, 'variables': {varString: queryVariable}})
-    print(kind, varString)
     searchResults = response.json()
     if rateLimitHit(searchResults):
         print('hit the rate limit, try again')
+    print(searchResults)
     return searchResults
 
 
@@ -118,5 +117,5 @@ def rateLimitHit(JSONdict: dict) -> bool:
     try:
         return JSONdict['data'] is None and JSONdict['errors'][0]['status'] == 429
     except KeyError:  # only should occur on 500 errors
-        print('JSONdict')
+        print(JSONdict)
         return False

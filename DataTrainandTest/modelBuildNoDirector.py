@@ -1,6 +1,8 @@
 import pandas as pd
+import sklearn.linear_model
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+import pickle
 
 from loadDataFrames import loadFromCSV, createFullDF
 
@@ -22,9 +24,8 @@ X = fullDF[featureColumns]
 y = fullDF['a_do_I_like']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=16)
-logreg = LogisticRegression(random_state=16, max_iter=500)
-logreg.fit(X_train, y_train)
+logregNoDirector: sklearn.linear_model.LogisticRegression = LogisticRegression(random_state=16, max_iter=500)
+logregNoDirector.fit(X_train, y_train)
 
-y_prediction = logreg.predict(X_test)
-
-print(X_train)
+pickle.dump(logregNoDirector, open('directorModel.pickle'))
+y_prediction = logregNoDirector.predict(X_test)

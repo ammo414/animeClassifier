@@ -24,28 +24,26 @@ def getDirectorStats(dIDs: pd.Series, animeDF: pd.DataFrame) -> tuple:
     directorsMeanScores = []
     directorsDoILike = []
     for directorId in dIDs.to_list():
-        print('director:', directorId)
         searchResults = get('DirectorsWorks', directorId)  # only looks at first 25 media that they were staffed to
+        print(f'Processing directorID {directorId}')
         directorWorks = []
         worksScores = []
         for mediaRole in searchResults['data']['Staff']['staffMedia']['edges']:
             if mediaRole['staffRole'] == 'Director' or mediaRole['staffRole'] == 'Chief Director':
-                print('media:', mediaRole['node']['id'])
                 directorWorks.append(mediaRole['node']['id'])
                 worksScores.append(mediaRole['node']['meanScore'])
         #  for each instance of the director_id, find animeID
         #  needs to be sped up
         worksFromAnimeDF: pandas.DataFrame = animeDF.loc[animeDF['director_id'] == directorId]
         animeIds = worksFromAnimeDF['anime_id']
-        meanScores = worksFromAnimeDF['mean_score']
-        # animeIds.reset_index(drop=True)
-        # meanScores.reset_index(drop=True)
+        meanScores = worksFromAnimeDF['a_mean_score']
+        animeIds.reset_index(drop=True, inplace=True)
+        meanScores.reset_index(drop=True, inplace=True)
 
         for iterate, aId in enumerate(animeIds):
             if aId not in directorWorks:
                 directorWorks.append(aId)
                 worksScores.append(meanScores[iterate])
-                #  TODO TEST AND FIX THIS
 
         directorsMeanScores.append(calculateDirectorsMeanScore(worksScores))
         directorsDoILike.append(calculateDoILikeDirector(directorWorks, animeDF))
@@ -104,7 +102,7 @@ def findDirector(entry: dict) -> int | None:
             if staff['role'].strip() == 'Chief Director':
                 chiefDirectorId = staff['node']['id']
 
-    except KeyError:
+    except KeyError:  # depending on the query, sometimes we get 'Media' instead of 'media'
         for staff in entry['Media']['staff']['edges']:
             if staff['role'].strip() == 'Director':
                 directorId = staff['node']['id']

@@ -17,12 +17,13 @@ def mainDataPrep(username: str) -> None:
         else:
             dropped = False
         processGraph.processAnime(x, d, dropped)
+        d.reprocessDirector()
         processGraph.processGenre(x, d)
         processGraph.processFormat(x, d)
     animeDF: pd.DataFrame = pd.DataFrame(d.returnTable('anime'),
-                                         columns=['anime_id', 'title', 'format', 'year_released', 'episodes',
-                                                  'mean_score', 'director_id', 'score'])
-    animeDF['do_I_Like'] = [True if s >= 70 else False for s in animeDF['score']]
+                                         columns=['anime_id', 'title', 'format', 'year_released',
+                                                  'a_mean_score', 'director_id', 'score'])
+    animeDF['a_do_I_like'] = [True if s >= 70 else False for s in animeDF['score']]
 
     genreDF: pd.DataFrame = pd.DataFrame(d.returnTable('genre'),
                                          columns=['anime_id', 'is_Action', 'is_Adventure', 'is_Comedy', 'is_Drama',
@@ -33,12 +34,12 @@ def mainDataPrep(username: str) -> None:
     formatDF: pd.DataFrame = pd.DataFrame(d.returnTable('format'),
                                           columns=['anime_id', 'TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA',
                                                    'MUSIC'])
-
+    print('Processing Director Data')
     directorDF: pd.DataFrame = director.buildDirectorDF(animeDF)
 
     d_MeanScores, d_DoILike = director.getDirectorStats(directorDF['director_id'], animeDF)  # lists
-    directorDF['mean_score'] = d_MeanScores
-    directorDF['dDoILike'] = d_DoILike
+    directorDF['d_mean_score'] = d_MeanScores
+    directorDF['d_do_I_like'] = d_DoILike
 
     animeDF.to_csv('animeDF.csv', index=False)
     genreDF.to_csv('genreDF.csv', index=False)
@@ -49,4 +50,3 @@ def mainDataPrep(username: str) -> None:
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     mainDataPrep('wannabe414')
-
