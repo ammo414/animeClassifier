@@ -1,4 +1,3 @@
-import pandas
 import pandas as pd
 
 from DataGatherAndClean.graphqlqueries import get
@@ -34,7 +33,7 @@ def getDirectorStats(dIDs: pd.Series, animeDF: pd.DataFrame) -> tuple:
                 worksScores.append(mediaRole['node']['meanScore'])
         #  for each instance of the director_id, find animeID
         #  needs to be sped up
-        worksFromAnimeDF: pandas.DataFrame = animeDF.loc[animeDF['director_id'] == directorId]
+        worksFromAnimeDF: pd.DataFrame = animeDF.loc[animeDF['director_id'] == directorId]
         animeIds = worksFromAnimeDF['anime_id']
         meanScores = worksFromAnimeDF['a_mean_score']
         animeIds.reset_index(drop=True, inplace=True)
@@ -93,7 +92,6 @@ def findDirector(entry: dict) -> int | None:
     """
     directorId = None
     chiefDirectorId = None
-    print(entry)
     try:
         for staff in entry['media']['staff']['edges']:
             if staff['role'].strip() == 'Director':
@@ -113,5 +111,5 @@ def findDirector(entry: dict) -> int | None:
         directorId = chiefDirectorId
     try:
         return int(directorId)
-    except TypeError:
-        return directorId  # should always be None, but just in case
+    except TypeError: # shoud only occur if directorId is None, but just in case
+        return directorId

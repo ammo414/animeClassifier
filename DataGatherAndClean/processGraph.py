@@ -116,6 +116,12 @@ def processAnime(json: dict, data: Data, dropped: bool = False) -> None:
 
 
 def processGenre(json: dict, data: Data) -> None:
+    """
+    main genre processing function. creates DataFrame of genre data for each anime
+
+    :param json:
+    :param data:
+    """
     entries: list = json['entries']
     for e in entries:
         row: list = [0 * n for n in range(19)]

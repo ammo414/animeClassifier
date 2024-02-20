@@ -1,5 +1,4 @@
 import time
-
 import requests
 
 BASE_URL: str = 'https://anilist.co'
@@ -39,15 +38,15 @@ query ($directorId: Int){
 }
 '''
 
-QUERY_ANIME_LISTS = '''
-    query ($username: String) {
-        MediaListCollection (userName: $username, type: ANIME) {
-            lists {
+QUERY_USERS_ANIME_LISTS = '''
+    query ($username: String){
+        MediaListCollection (userName: $username, type: ANIME){
+            lists{
                 status
-                entries {
-                    media {
+                entries{
+                    media{
                         id
-                        title {
+                        title{
                             english
                             romaji 
                         }
@@ -55,12 +54,12 @@ QUERY_ANIME_LISTS = '''
                         seasonYear
                         genres
                         meanScore
-                        staff(sort: RELEVANCE, page:1, perPage: 6) {
+                        staff(sort: RELEVANCE, page:1, perPage: 6){
                             edges{
                                 role
-                                node {
+                                node{
                                     id
-                                    name {
+                                    name{
                                         full
                                     }
                                 }
@@ -74,6 +73,28 @@ QUERY_ANIME_LISTS = '''
     }
 '''
 
+QUERY_NEW_ANIME = '''
+query ($title: String){
+    Media(search: $title){
+        id
+        format
+        seasonYear
+        genres
+        meanScore
+        staff(sort: RELEVANCE, page:1, perPage: 25){
+            edges{
+                role
+                node{
+                    id
+                    name{
+                        full
+                    }
+                }
+            }
+        }
+    }
+}
+'''
 
 def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     """
@@ -90,7 +111,7 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     varString: str = ""
     match kind:
         case 'AnimeLists':
-            query = QUERY_ANIME_LISTS
+            query = QUERY_USERS_ANIME_LISTS
             varString = 'username'
         case 'AnimeDirector':
             query = QUERY_ANIME_DIRECTOR
@@ -98,6 +119,10 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
         case 'DirectorsWorks':
             query = QUERY_DIRECTORS_WORKS
             varString = 'directorId'
+        case 'NewAnime':
+            query = QUERY_NEW_ANIME
+            varString = 'title'
+    # TODO: Refactor this library now that QUERY_NEW_ANIME is here
     if rateLimit:
         time.sleep(2)
     response = requests.post(QUERY_URL, json={'query': query, 'variables': {varString: queryVariable}})

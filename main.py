@@ -5,33 +5,33 @@ from DataGatherAndClean import processGraph, director
 
 
 def mainDataPrep(username: str) -> None:
-    d: processGraph.Data = processGraph.Data(username)
-    results: dict = DataGatherAndClean.graphqlqueries.get('AnimeLists', 'wannabe414', False)
-    lst: list = results['data']['MediaListCollection']['lists']
+    userData: processGraph.Data = processGraph.Data(username)
+    results: dict = DataGatherAndClean.graphqlqueries.get('AnimeLists', username, False)
+    listOfLists: list = results['data']['MediaListCollection']['lists']
     dropped: bool
-    for x in lst:
-        if x['status'] == 'PLANNING':
+    for animeList in listOfLists:
+        if animeList['status'] == 'PLANNING':
             continue
-        elif x['status'] == 'DROPPED':
+        elif animeList['status'] == 'DROPPED':
             dropped = True
         else:
             dropped = False
-        processGraph.processAnime(x, d, dropped)
-        d.reprocessDirector()
-        processGraph.processGenre(x, d)
-        processGraph.processFormat(x, d)
-    animeDF: pd.DataFrame = pd.DataFrame(d.returnTable('anime'),
+        processGraph.processAnime(animeList, userData, dropped)
+        userData.reprocessDirector()
+        processGraph.processGenre(animeList, userData)
+        processGraph.processFormat(animeList, userData)
+    animeDF: pd.DataFrame = pd.DataFrame(userData.returnTable('anime'),
                                          columns=['anime_id', 'title', 'format', 'year_released',
                                                   'a_mean_score', 'director_id', 'score'])
     animeDF['a_do_I_like'] = [True if s >= 70 else False for s in animeDF['score']]
 
-    genreDF: pd.DataFrame = pd.DataFrame(d.returnTable('genre'),
+    genreDF: pd.DataFrame = pd.DataFrame(userData.returnTable('genre'),
                                          columns=['anime_id', 'is_Action', 'is_Adventure', 'is_Comedy', 'is_Drama',
                                                   'is_Ecchi', 'is_Sci-Fi', 'is_Fantasy', 'is_Horror', 'is_Mahou_Shoujo',
                                                   'is_Mecha', 'is_Music', 'is_Mystery', 'is_Psychological',
                                                   'is_Romance', 'is_Slice of Life', 'is_Sports', 'is_Supernatural',
                                                   'is_Thriller'])
-    formatDF: pd.DataFrame = pd.DataFrame(d.returnTable('format'),
+    formatDF: pd.DataFrame = pd.DataFrame(userData.returnTable('format'),
                                           columns=['anime_id', 'TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA',
                                                    'MUSIC'])
     print('Processing Director Data')

@@ -24,8 +24,8 @@ X = fullDF[featureColumns]
 y = fullDF['a_do_I_like']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=16)
-logregNoDirector: sklearn.linear_model.LogisticRegression = LogisticRegression(random_state=16, max_iter=500)
+logregNoDirector: LogisticRegression = LogisticRegression(random_state=16, max_iter=500)
 logregNoDirector.fit(X_train, y_train)
 
-pickle.dump(logregNoDirector, open('directorModel.pickle'))
+pickle.dump(logregNoDirector, open('DirectorModel.pickle'))
 y_prediction = logregNoDirector.predict(X_test)
