@@ -16,10 +16,12 @@ def mainDataPrep(username: str) -> None:
             dropped = True
         else:
             dropped = False
-        processGraph.processAnime(animeList, userData, dropped)
-        userData.reprocessDirector()
-        processGraph.processGenre(animeList, userData)
-        processGraph.processFormat(animeList, userData)
+        for anime in animeList['entries']:
+            processGraph.processAnime(anime, userData, dropped)
+            processGraph.processGenre(animeList, userData)
+            processGraph.processFormat(animeList, userData)
+    userData.reprocessDirector()
+
     animeDF: pd.DataFrame = pd.DataFrame(userData.returnTable('anime'),
                                          columns=['anime_id', 'title', 'format', 'year_released',
                                                   'a_mean_score', 'director_id', 'score'])

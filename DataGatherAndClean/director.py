@@ -90,26 +90,24 @@ def findDirector(entry: dict) -> int | None:
     :param entry:
     :return:
     """
-    directorId = None
-    chiefDirectorId = None
-    try:
-        for staff in entry['media']['staff']['edges']:
-            if staff['role'].strip() == 'Director':
-                directorId = staff['node']['id']
-                break
-            if staff['role'].strip() == 'Chief Director':
-                chiefDirectorId = staff['node']['id']
+    directorId: str | None = None
+    chiefDirectorId: str | None = None
 
-    except KeyError:  # depending on the query, sometimes we get 'Media' instead of 'media'
-        for staff in entry['Media']['staff']['edges']:
-            if staff['role'].strip() == 'Director':
-                directorId = staff['node']['id']
-                break
-            if staff['role'].strip() == 'Chief Director':
-                chiefDirectorId = staff['node']['id']
+    media: str
+    if entry['media'] is not None:
+        media = 'media'
+    else:
+        media = 'Media' # depending on the query, we either get 'media' or 'Media'
+    for staff in entry[media]['staff']['edges']:
+        if staff['role'].strip() == 'Director':
+            directorId = staff['node']['id']
+            break
+        if staff['role'].strip() == 'Chief Director':
+            chiefDirectorId = staff['node']['id']
+
     if directorId is None:
         directorId = chiefDirectorId
     try:
         return int(directorId)
-    except TypeError: # shoud only occur if directorId is None, but just in case
+    except TypeError: # should only occur if directorId is None, but just in case
         return directorId

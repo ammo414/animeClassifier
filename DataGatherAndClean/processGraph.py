@@ -87,61 +87,56 @@ class Data:
                 return self.formatData
 
 
-def processAnime(json: dict, data: Data, dropped: bool = False) -> None:
+def processAnime(animeData: dict, data: Data, dropped: bool = False) -> None:
     """
     main anime processing function
-    :param json: graphql json of anime search results
+    :param animeData: graphql json of anime search results
     :param data: Data class storing tables
     :param dropped: flag of if the watchlist was 'DROPPED' or not
     :return:
     """
-    entries: list = json['entries']
-    for e in entries:
-        directorId: int | None = findDirector(e)
-        if dropped:
-            score = 0  # even if we gave it a good score, we want to say we don't like it
-        else:
-            score = e['score']
-        row: list = [e['media']['id'],
-                       e['media']['title']['english'] or e['media']['title']['romaji'] or None,
-                       e['media']['format'] or None,
-                       e['media']['seasonYear'] or None,
-                       e['media']['meanScore'] or None,
-                       directorId,
-                       score]
-        print(f'Adding {row[1]} to database')
-        if directorId is None:
-            data.appendRequery(row[0])
-        data.appendAnime(row)
+
+    directorId: int | None = findDirector(animeData)
+    if dropped:
+        score = 0  # even if we initially gave it a good score, if dropped then we don't like it
+    else:
+        score = animeData['score']
+    row: list = [animeData['media']['id'],
+                 animeData['media']['title']['english'] or animeData['media']['title']['romaji'] or None,
+                 animeData['media']['format'] or None,
+                 animeData['media']['seasonYear'] or None,
+                 animeData['media']['meanScore'] or None,
+                 directorId,
+                 score]
+    print(f'Adding {row[1]} to database')
+    if directorId is None:
+        data.appendRequery(row[0])
+    data.appendAnime(row)
 
 
-def processGenre(json: dict, data: Data) -> None:
+def processGenre(animeData: dict, data: Data) -> None:
     """
     main genre processing function. creates DataFrame of genre data for each anime
-
-    :param json:
+    :param animeData:
     :param data:
     """
-    entries: list = json['entries']
-    for e in entries:
-        row: list = [0 * n for n in range(19)]
-        row[0] = e['media']['id']
-        genres: list = e['media']['genres']
-        for iterate, g in enumerate(
-                ['anime_id', 'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Sci-Fi', 'Fantasy', 'Horror',
-                 'Mahou_Shoujo', 'Mecha', 'Music', 'Mystery', 'Psychological', 'Romance', 'Slice of Life', 'Sports',
-                 'Supernatural', 'Thriller']):
-            if g in genres:
-                row[iterate] = 1
-        data.appendGenre(row)
+    animesGenres: list = [0 * n for n in range(19)]
+    animesGenres[0] = animeData['media']['id']
+    genres: list = animeData['media']['genres']
+    for iterate, g in enumerate(
+            ['anime_id', 'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Sci-Fi', 'Fantasy', 'Horror',
+             'Mahou_Shoujo', 'Mecha', 'Music', 'Mystery', 'Psychological', 'Romance', 'Slice of Life', 'Sports',
+             'Supernatural', 'Thriller']):
+        if g in genres:
+            animesGenres[iterate] = 1
+    data.appendGenre(animesGenres)
 
 
-def processFormat(json: dict, data: Data) -> None:
-    entries: list = json['entries']
+def processFormat(animeData: dict, data: Data) -> None:
     formats: list = ['anime_id', 'TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA', 'MUSIC']
-    for e in entries:
-        row: list = [0 * n for n in range(8)]
-        row[0] = e['media']['id']
-        entryFormat: str = e['media']['format']
-        row[formats.index(entryFormat)] = 1
-        data.appendFormat(row)
+    row: list = [0 * n for n in range(8)]
+    row[0] = animeData['media']['id']
+    entryFormat: str = animeData['media']['format']
+    row[formats.index(entryFormat)] = 1
+    data.appendFormat(row)
+
