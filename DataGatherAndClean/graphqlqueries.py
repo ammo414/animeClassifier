@@ -77,6 +77,9 @@ QUERY_NEW_ANIME = '''
 query ($title: String){
     Media(search: $title){
         id
+        title{
+            english
+            romanji
         format
         seasonYear
         genres
@@ -95,6 +98,7 @@ query ($title: String){
     }
 }
 '''
+
 
 def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     """
