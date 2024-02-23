@@ -2,16 +2,17 @@ import pandas as pd
 
 import DataGatherAndClean.GraphQLQueries
 from DataGatherAndClean import processGraph, directorHandling
+from DataTrainAndTest import buildModels
 
 
 def mainDataPrep(username: str) -> None:
     userData: processGraph.Data = processGraph.Data(username)
-    results: dict = DataGatherAndClean.graphqlqueries.get('AnimeLists', username, False)
+    results: dict = DataGatherAndClean.GraphQLQueries.get('AnimeLists', username, False)
     listOfLists: list = results['data']['MediaListCollection']['lists']
     dropped: bool
     for animeList in listOfLists:
         if animeList['status'] == 'PLANNING':
-            continue
+            continue  # don't want to use planning to watch anime as they don't have reliable scores
         elif animeList['status'] == 'DROPPED':
             dropped = True
         else:
@@ -39,7 +40,7 @@ def mainDataPrep(username: str) -> None:
     print('Processing Director Data')
     directorDF: pd.DataFrame = directorHandling.buildDirectorDF(animeDF)
 
-    d_MeanScores, d_DoILike = directorHandling.getDirectorStats(directorDF['director_id'], animeDF)  # lists
+    d_MeanScores, d_DoILike = directorHandling.calculateDirectorStats(directorDF['director_id'], animeDF)  # lists
     directorDF['d_mean_score'] = d_MeanScores
     directorDF['d_do_I_like'] = d_DoILike
 
@@ -52,6 +53,6 @@ def mainDataPrep(username: str) -> None:
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     mainDataPrep('wannabe414')
-    # mainTrainModel()
+    buildModels.mainTrainModels()
 
 

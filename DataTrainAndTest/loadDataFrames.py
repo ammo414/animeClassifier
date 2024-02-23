@@ -4,7 +4,7 @@ import pandas as pd
 def loadFromCSV(filename: str) -> pd.DataFrame:
     """
     load DataFrame from .csv and handle columns
-    :param filename: filename of .csv
+    :param filename: filename of .csv (not filepath)
     :return: DataFrame
     """
     df: pd.DataFrame = pd.read_csv(f'~/PycharmProjects/animeClassifier/{filename}.csv', header=None)

@@ -2,7 +2,7 @@ import pickle
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
-from loadDataFrames import loadFromCSV, createFullDFRecursive
+from DataTrainAndTest.loadDataFrames import loadFromCSV, createFullDFRecursive
 
 
 def fitModel(X: pd.DataFrame, y: pd.Series) -> LogisticRegression:

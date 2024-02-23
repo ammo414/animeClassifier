@@ -13,15 +13,15 @@ def buildDirectorDF(animeDF: pd.DataFrame) -> pd.DataFrame:
     return animeDF['director_id'].drop_duplicates().dropna().to_frame(name='director_id')
 
 
-def getDirectorStats(dIDs: pd.Series, animeDF: pd.DataFrame) -> tuple:
+def calculateDirectorStats(dIDs: pd.Series, animeDF: pd.DataFrame) -> tuple:
     """
-    gets the mean score of all anime the director directed and percentage of anime I liked by them.
+    gets the mean mean score of all anime the director directed and percentage of anime I liked by them.
     however, the GraphQL only lets me grab the first n anime that an employee worked on (not necessarily as a director).
     since I don't want to hit the database too much, we are only sampling from however many of the first 25 of their
     works they directed, so this is not great but it probably is the best.
     :param dIDs: director_id column
     :param animeDF: anime DataFrame
-    :return: mean score of director's animes and percentage of animes I liked by them
+    :return: mean mean score of director's animes and percentage of animes I liked by them
     """
     directorsMeanScores = []
     directorsDoILike = []
@@ -114,5 +114,32 @@ def findDirector(entry: dict) -> int | None:
         directorId = chiefDirectorId
     try:
         return int(directorId)
-    except TypeError: # should only occur if directorId is None, but just in case
+    except TypeError:  # should only occur if directorId is None, but just in case
         return directorId
+
+
+def isDirectorInDF(directorId: int, directorDF: pd.DataFrame) -> bool:
+    """
+    determines if director is in a DataFrame
+    :param directorId: director ID
+    :param directorDF: DataFrame with ['director_id'] column
+    :return:
+    """
+
+    if directorId in directorDF['director_id'].array:
+        return True
+
+    else:
+        return False
+
+
+def pullDirectorStatsFromDF(directorId: int, directorDF: pd.DataFrame) -> list:
+    """
+    pulls director's two stats (do I like them, and mean score) from DataFrame
+    :param directorDF: DataFrame with director_id, d_do_I_like, and d_mean_score
+    :param directorId: director's ID
+    :return: list of [d_do_I_like, d_mean_score]
+    """
+    d_doILike = directorDF.loc[directorDF['director_id'] == directorId, 'd_do_I_like'].iloc[0]
+    d_meanScore = directorDF.loc[directorDF['director_id'] == directorId, 'd_mean_score'].iloc[0]
+    return [d_doILike, d_meanScore]

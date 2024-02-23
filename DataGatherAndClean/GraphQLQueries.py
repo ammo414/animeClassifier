@@ -77,8 +77,8 @@ QUERY_USERS_ANIME_LISTS = '''
 '''
 
 QUERY_NEW_ANIME = '''
-query ($title: String){
-    Media(search: $title, type: ANIME){
+query ($title: String, $id: Int){
+    Media(search: $title, id: $id, type: ANIME){
         id
         title{
             english
@@ -129,9 +129,12 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
         case 'DirectorsWorks':
             query = QUERY_DIRECTORS_WORKS
             varString = 'directorId'
-        case 'NewAnime':
+        case 'NewAnimeTitle':
             query = QUERY_NEW_ANIME
             varString = 'title'
+        case 'NewAnimeID':
+            query = QUERY_NEW_ANIME
+            varString = 'id'
     # TODO: Refactor this library now that QUERY_NEW_ANIME is here
     if rateLimit:
         time.sleep(2)

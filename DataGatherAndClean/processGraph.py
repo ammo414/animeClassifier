@@ -58,8 +58,8 @@ class Data:
         :param directorId: director_id
         :return: None
         """
-        for row in self.animeData: # animeData is not sorted based on row[0]. Might be an optimization point depending
-            if row[0] == animeId:  # on how often we are insertDirector-in -- then we can binary search instead here.
+        for row in self.animeData:  # animeData is not sorted based on row[0]. Might be an optimization point depending
+            if row[0] == animeId:   # on how often we are insertDirector-in -- then we can binary search instead here.
                 row[6] = directorId
                 break
 
