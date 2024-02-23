@@ -2,7 +2,9 @@ import pandas as pd
 
 
 def loadFromCSV(dfName: str) -> pd.DataFrame:
-    df: pd.DataFrame = pd.read_csv(f'~/PycharmProjects/animeClassifier/{dfName}.csv')
+    df: pd.DataFrame = pd.read_csv(f'~/PycharmProjects/animeClassifier/{dfName}.csv', header=None)
+    df.columns = df.iloc[0]
+    df = df[1:]
     return df
 
 

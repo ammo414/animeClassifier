@@ -75,13 +75,16 @@ QUERY_USERS_ANIME_LISTS = '''
 
 QUERY_NEW_ANIME = '''
 query ($title: String){
-    Media(search: $title){
+    Media(search: $title, type: ANIME){
         id
         title{
             english
-            romanji
+            romaji
+        }
         format
-        seasonYear
+        startDate{
+            year
+        }
         genres
         meanScore
         staff(sort: RELEVANCE, page:1, perPage: 25){
@@ -133,7 +136,7 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     searchResults = response.json()
     if rateLimitHit(searchResults):
         print('hit the rate limit, try again')
-    print(searchResults)
+    # print(searchResults)
     return searchResults
 
 
@@ -147,4 +150,5 @@ def rateLimitHit(JSONdict: dict) -> bool:
         return JSONdict['data'] is None and JSONdict['errors'][0]['status'] == 429
     except KeyError:  # only should occur on 500 errors
         print(JSONdict)
+        print('500 error')
         return False

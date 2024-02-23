@@ -18,8 +18,8 @@ def mainDataPrep(username: str) -> None:
             dropped = False
         for anime in animeList['entries']:
             processGraph.processAnime(anime, userData, dropped)
-            processGraph.processGenre(animeList, userData)
-            processGraph.processFormat(animeList, userData)
+            processGraph.processGenre(anime, userData)
+            processGraph.processFormat(anime, userData)
     userData.reprocessDirector()
 
     animeDF: pd.DataFrame = pd.DataFrame(userData.returnTable('anime'),
@@ -28,11 +28,11 @@ def mainDataPrep(username: str) -> None:
     animeDF['a_do_I_like'] = [True if s >= 70 else False for s in animeDF['score']]
 
     genreDF: pd.DataFrame = pd.DataFrame(userData.returnTable('genre'),
-                                         columns=['anime_id', 'is_Action', 'is_Adventure', 'is_Comedy', 'is_Drama',
-                                                  'is_Ecchi', 'is_Sci-Fi', 'is_Fantasy', 'is_Horror', 'is_Mahou_Shoujo',
-                                                  'is_Mecha', 'is_Music', 'is_Mystery', 'is_Psychological',
-                                                  'is_Romance', 'is_Slice of Life', 'is_Sports', 'is_Supernatural',
-                                                  'is_Thriller'])
+                                         columns=['anime_id', 'Action', 'Adventure', 'Comedy', 'Drama',
+                                                  'Ecchi', 'Sci-Fi', 'Fantasy', 'Horror', 'Mahou_Shoujo',
+                                                  'Mecha', 'Music', 'Mystery', 'Psychological',
+                                                  'Romance', 'Slice of Life', 'Sports', 'Supernatural',
+                                                  'Thriller'])
     formatDF: pd.DataFrame = pd.DataFrame(userData.returnTable('format'),
                                           columns=['anime_id', 'TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA',
                                                    'MUSIC'])
@@ -52,3 +52,6 @@ def mainDataPrep(username: str) -> None:
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     mainDataPrep('wannabe414')
+    # mainTrainModel()
+
+

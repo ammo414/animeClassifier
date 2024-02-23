@@ -94,10 +94,10 @@ def findDirector(entry: dict) -> int | None:
     chiefDirectorId: str | None = None
 
     media: str
-    if entry['media'] is not None:
+    if 'media' in entry:
         media = 'media'
     else:
-        media = 'Media' # depending on the query, we either get 'media' or 'Media'
+        media = 'Media'  # depending on the query, we either get 'media' or 'Media'
     for staff in entry[media]['staff']['edges']:
         if staff['role'].strip() == 'Director':
             directorId = staff['node']['id']
