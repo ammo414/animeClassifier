@@ -1,23 +1,45 @@
 import pickle
 from sklearn.linear_model import LogisticRegression
 from flask import request, jsonify, Flask
-from DataGatherAndClean.graphqlqueries import get
-from DataGatherAndClean.director import findDirector
+
+from DataGatherAndClean.GraphQLQueries import get
+from DataGatherAndClean.directorHandling import findDirector
 
 
-def load_model():
-    with open('/home/anmol/PycharmProjects/animeClassifier/noDirectorModel.pickle', mode='rb') as pickle_model:
+def load_model(filename):
+    """
+    loads a model from a given .pickle file
+    :param filename: file containing pickled model
+    :return: LogisticRegression model
+    """
+    with open(f'/home/anmol/PycharmProjects/animeClassifier/{filename}.pickle', mode='rb') as pickle_model:
         model = pickle.load(pickle_model)
     return model
 
 
-def preprocess_input(animeTitle):
-    print(f'Looking up recs for {animeTitle}')
-    searchResults = get('NewAnime', animeTitle, True)
-    return unpackRequest(searchResults)
+def preprocess_input(query: str) -> tuple:
+    """
+    using the HTTP input, which should be an anime title, sends out a GraphQL query and gets all relevant data. then
+    returns that data back to be sent to the model for prediction.
+    :param query: anime title
+    :return: list of anime Data, aniList's anime ID, title of anime (mainly for troubleshooting)
+    """
+    searchResults: dict = get('NewAnime', query, True)
+
+    animeJSON: dict = searchResults['data']
+    requestDict: dict = processAnime(animeJSON)
+    requestDict.update(processGenre(animeJSON))
+    requestDict.update(processFormat(animeJSON))
+
+    return convertreqDictToReqList(requestDict), requestDict['anime_id'], requestDict['title']
 
 
-def convertreqDictToReqList(requestDct):
+def convertreqDictToReqList(requestDct: dict) -> list:
+    """
+    takes in a dict of the queried anime's data and converts it to a 2D list to send to the model
+    :param requestDct: dict of queried anime's data
+    :return: 2D array of queried anime's data
+    """
     requestList: list = [requestDct['year_released'],
                          requestDct['a_mean_score'],
                          requestDct['Action'],
@@ -45,23 +67,18 @@ def convertreqDictToReqList(requestDct):
                          requestDct['OVA'],
                          requestDct['ONA'],
                          requestDct['MUSIC']]
-    print(requestList)
-    return requestList
+    return [requestList]
 
 
-def unpackRequest(searchResults):
-    animeJSON: dict = searchResults['data']
-    requestDict: dict = processAnime(animeJSON)
-    requestDict.update(processGenre(animeJSON))
-    requestDict.update(processFormat(animeJSON))
-
-    return [convertreqDictToReqList(requestDict)] # have to make it 2D
-
-
-def processAnime(animeJSON):
+def processAnime(animeJSON: dict) -> dict:
+    """
+    creates a dict of anime data from the GraphQL results
+    :param animeJSON: GraphQL results
+    :return: dict of anime data
+    """
     animeDct: dict = {}
-    directorID = findDirector(animeJSON)
-    animeJSON = animeJSON['Media']
+    directorID: int | None = findDirector(animeDct)
+    animeJSON: dict = animeDct['Media']
     animeDct = {'anime_id': animeJSON['id'],
                 'title': animeJSON['title']['english'] or animeJSON['title']['romanji'] or None,
                 'format': animeJSON['format'],
@@ -71,7 +88,12 @@ def processAnime(animeJSON):
     return animeDct
 
 
-def processGenre(animeJSON):
+def processGenre(animeJSON: dict) -> dict:
+    """
+    creates a dict of genre data from the GraphQL query results
+    :param animeJSON: GraphQL results
+    :return: dict of genre data
+    """
     genreDct: dict = {}
     genres: list = animeJSON['Media']['genres']
     for g in ['Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Sci-Fi', 'Fantasy', 'Horror',
@@ -84,31 +106,35 @@ def processGenre(animeJSON):
     return genreDct
 
 
-def processFormat(animeJSON):
+def processFormat(animeJSON: dict) -> dict:
+    """
+    creates a dict of format data from the GraphQL query results
+    :param animeJSON: GraphQL results
+    :return: dict of format data
+    """
     formatDct: dict = {'TV': 0, 'TV_SHORT': 0, 'MOVIE': 0, 'SPECIAL': 0, 'OVA': 0, 'ONA': 0, 'MUSIC': 0}
     animesFormat: str = animeJSON['Media']['format']
     formatDct[animesFormat] = 1
     return formatDct
 
 
-def predict(model: LogisticRegression, query):
+def predict(model: LogisticRegression, query: list) -> list:
     prediction = model.predict(query)
     return prediction
 
 
 if __name__ == '__main__':
     app = Flask(__name__)
-    logModel_noDirector = load_model()
+    logModel_noDirector = load_model('noDirector')
 
 
-    @app.route('/api/<string:query>', methods=['GET'])
-    def servePrediction(query):
-        animeTitle = query
+    @app.route('/api/<string:animeTitle>', methods=['GET'])
+    def servePrediction(animeTitle: str) -> dict:
 
-        processedQuery = preprocess_input(animeTitle)
-        pred = predict(logModel_noDirector, processedQuery)
+        processedQuery, animeId, matchedTitle = preprocess_input(animeTitle)
+        pred: list = predict(logModel_noDirector, processedQuery)
         print(pred)
-        print(type(pred))
+
         '''try:
             animeTitle = request.args.get('title', '')
 
@@ -117,7 +143,10 @@ if __name__ == '__main__':
         except Exception as e:
             print(f'{e} occurred while processing anime')
             return str(e), 500'''
-        return pred[0]
+        retJSON: dict= {'prediction': pred[0],
+                        'animeId': animeId,
+                        'matchedTitle': matchedTitle}
+        return jsonify(retJSON)
 
 
     app.run(debug=True, port=8080)

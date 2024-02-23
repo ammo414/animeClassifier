@@ -1,7 +1,7 @@
 import pandas as pd
 
-import DataGatherAndClean.graphqlqueries
-from DataGatherAndClean import processGraph, director
+import DataGatherAndClean.GraphQLQueries
+from DataGatherAndClean import processGraph, directorHandling
 
 
 def mainDataPrep(username: str) -> None:
@@ -37,9 +37,9 @@ def mainDataPrep(username: str) -> None:
                                           columns=['anime_id', 'TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA',
                                                    'MUSIC'])
     print('Processing Director Data')
-    directorDF: pd.DataFrame = director.buildDirectorDF(animeDF)
+    directorDF: pd.DataFrame = directorHandling.buildDirectorDF(animeDF)
 
-    d_MeanScores, d_DoILike = director.getDirectorStats(directorDF['director_id'], animeDF)  # lists
+    d_MeanScores, d_DoILike = directorHandling.getDirectorStats(directorDF['director_id'], animeDF)  # lists
     directorDF['d_mean_score'] = d_MeanScores
     directorDF['d_do_I_like'] = d_DoILike
 

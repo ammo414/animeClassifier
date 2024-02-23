@@ -5,13 +5,24 @@ from sklearn.linear_model import LogisticRegression
 from loadDataFrames import loadFromCSV, createFullDFRecursive
 
 
-def fitModel(X, y):
+def fitModel(X: pd.DataFrame, y: pd.Series) -> LogisticRegression:
+    """
+    helper tag to fit a logistic regression model to some data
+    :param X: features that we want to fit the model to
+    :param y: dependent variable
+    :return: fitted logistic regression model
+    """
     logRegDirector = LogisticRegression(random_state=16, max_iter=500)
-    logRegDirector.fit(X, y)
+    logRegDirector.fit(X.values, y.values)
     return logRegDirector
 
 
-def trainModels(fullDataFrame):
+def trainModels(fullDataFrame: pd.DataFrame) -> tuple:
+    """
+    sets up features for both models and then fits them
+    :param fullDataFrame: DataFrame with all the relevant data
+    :return: both the directorModel and noDirectorModel
+    """
     featureColumnsNoDirector = ['year_released', 'a_mean_score', 'Action', 'Adventure', 'Comedy', 'Drama',
                                 'Ecchi', 'Sci-Fi', 'Fantasy', 'Horror', 'Mahou_Shoujo', 'Mecha', 'Music',
                                 'Mystery', 'Psychological', 'Romance', 'Slice of Life', 'Sports',
@@ -25,7 +36,11 @@ def trainModels(fullDataFrame):
     return director, noDirector
 
 
-def mainTrainModel():
+def mainTrainModels() -> None:
+    """
+    loads DataFrames from .CSVs, creates a complete DataFrame, trains the models, and pickles the models for later use
+    :return: None
+    """
     allCSVs = ['animeDF', 'formatDF', 'genreDF', 'directorDF']
     animeDF = loadFromCSV('animeDF')
     formatDF = loadFromCSV('formatDF')
@@ -33,8 +48,7 @@ def mainTrainModel():
     directorDF = loadFromCSV('directorDF')
     joiningDataFrames = [formatDF, genreDF, directorDF]
     mergePoints = ['anime_id', 'anime_id', 'director_id']
-    fullDF: pd.DataFrame = pd.DataFrame()
-    fullDF = createFullDFRecursive(animeDF, joiningDataFrames, mergePoints)
+    fullDF: pd.DataFrame = createFullDFRecursive(animeDF, joiningDataFrames, mergePoints)
     # to csv just for fun
     fullDF.to_csv('~/PycharmProjects/animeClassifier/fullDF.csv', index=False)
 
@@ -45,6 +59,6 @@ def mainTrainModel():
 
 
 if __name__ == '__main__':
-    mainTrainModel()
+    mainTrainModels()
 
 

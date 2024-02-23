@@ -1,1 +1,1 @@
-__all__ = ['director', 'graphqlqueries', 'processGraph']
+__all__ = ['directorHandling.py', 'GraphQLQueries.py', 'processGraph']

@@ -4,6 +4,9 @@ import requests
 BASE_URL: str = 'https://anilist.co'
 QUERY_URL: str = 'https://graphql.anilist.co'
 
+# a graphQL query sends in a dict of a JSON query, as shown below, along with any potential variables to plug into the
+# query (specified by the $). a JSON object is returned with the same structure as the query.
+# documentation can be found at https://github.com/AniList/ApiV2-GraphQL-Docs
 QUERY_ANIME_DIRECTOR = '''
 query ($mediaId: Int){
     Media(id: $mediaId){
@@ -25,7 +28,7 @@ query ($mediaId: Int){
 QUERY_DIRECTORS_WORKS = '''
 query ($directorId: Int){
     Staff(id: $directorId){
-        staffMedia(sort: START_DATE, page: 1, perPage: 25){
+        staffMedia(sort: START_DATE, type: ANIME, page: 1, perPage: 25){
             edges{
                 staffRole
                 node{
@@ -105,8 +108,8 @@ query ($title: String){
 
 def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     """
-    for an aniList username, query for all their watchlists
-    :param kind: which query
+    API that wraps around various graphQL queries with rate limiting included and unJSONifying included.
+    :param kind: which query we want to send to aniList
     :param queryVariable: variables for the query
     :param rateLimit:
     :return: list of watchlists
@@ -136,7 +139,6 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     searchResults = response.json()
     if rateLimitHit(searchResults):
         print('hit the rate limit, try again')
-    # print(searchResults)
     return searchResults
 
 

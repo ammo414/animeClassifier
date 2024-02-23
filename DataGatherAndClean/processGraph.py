@@ -1,8 +1,12 @@
-from DataGatherAndClean.director import findDirector
-from DataGatherAndClean.graphqlqueries import get
+from DataGatherAndClean.directorHandling import findDirector
+from DataGatherAndClean.GraphQLQueries import get
 
 
 class Data:
+    """
+    maintains all relevant data related to anime and stores them in one of a few lists. Offers functions to access and
+    update these lists. also offers a function to handle reattempting getting and saving director data.
+    """
     def __init__(self, username: str):
         self.username: str = username
         self.directorRequery: list = []
@@ -35,14 +39,14 @@ class Data:
     def appendRequery(self, animeId: int) -> None:
         """
         add anime to stack to be re-queried for director information alter
-        :param animeId:
+        :param animeId: anime ID to be requeried
         """
         self.directorRequery.append(animeId)
 
     def popRequery(self) -> iter:
         """
         pop from re-query stack and yield the pop
-        :return: animeId to be re-queried
+        :return: anime ID to be requeried
         """
         if len(self.directorRequery) > 0:
             yield self.directorRequery.pop()
@@ -52,17 +56,17 @@ class Data:
         for an animeId already in Data.animeData, add the directorId
         :param animeId: anime_id
         :param directorId: director_id
-        :return:
+        :return: None
         """
-        for row in self.animeData:
-            if row[0] == animeId:
+        for row in self.animeData: # animeData is not sorted based on row[0]. Might be an optimization point depending
+            if row[0] == animeId:  # on how often we are insertDirector-in -- then we can binary search instead here.
                 row[6] = directorId
                 break
 
-    def reprocessDirector(self):
+    def reprocessDirector(self) -> None:
         """
-        re-query all anime in Data.appendRequery, this time for 25 roles instead of 6
-        :return:
+        re-query all anime in Data.appendRequery, this time for 25 roles(max amount of results) instead of 6
+        :return: None
         """
         for animeID in self.popRequery():
             if animeID is None:
@@ -74,9 +78,9 @@ class Data:
 
     def returnTable(self, tableName: str) -> list:
         """
-        return list of rows, depending on what tableName is
-        :param tableName: name of table we want
-        :return:
+        return list of rows, depending on what tableName is. to be used to create DataFrames (hence table)
+        :param tableName: name of list of rows we want
+        :return: list of rows
         """
         match tableName:
             case 'anime':
@@ -87,42 +91,43 @@ class Data:
                 return self.formatData
 
 
-def processAnime(animeData: dict, data: Data, dropped: bool = False) -> None:
+def processAnime(animeQuery: dict, data: Data, dropped: bool = False) -> None:
     """
-    main anime processing function
-    :param animeData: graphql json of anime search results
-    :param data: Data class storing tables
-    :param dropped: flag of if the watchlist was 'DROPPED' or not
+    main anime processing function: tries to find director, formats data from GraphQL query, appends to Data.animeData
+    :param animeQuery: GraphQL json of anime search results
+    :param data: Data class that is storing tables
+    :param dropped: boolean of if the watchlist was 'DROPPED' or not
     :return:
     """
 
-    directorId: int | None = findDirector(animeData)
+    directorId: int | None = findDirector(animeQuery)
     if dropped:
         score = 0  # even if we initially gave it a good score, if dropped then we don't like it
     else:
-        score = animeData['score']
-    row: list = [animeData['media']['id'],
-                 animeData['media']['title']['english'] or animeData['media']['title']['romaji'] or None,
-                 animeData['media']['format'] or None,
-                 animeData['media']['seasonYear'] or None,
-                 animeData['media']['meanScore'] or None,
+        score = animeQuery['score']
+    row: list = [animeQuery['media']['id'],
+                 animeQuery['media']['title']['english'] or animeQuery['media']['title']['romaji'] or None,
+                 animeQuery['media']['format'] or None,
+                 animeQuery['media']['seasonYear'] or None,
+                 animeQuery['media']['meanScore'] or None,
                  directorId,
                  score]
-    print(f'Adding {row[1]} to database')
+    print(f'Adding {row[1]} to database.')
     if directorId is None:
         data.appendRequery(row[0])
     data.appendAnime(row)
 
 
-def processGenre(animeData: dict, data: Data) -> None:
+def processGenre(animeQuery: dict, data: Data) -> None:
     """
-    main genre processing function. creates DataFrame of genre data for each anime
-    :param animeData:
-    :param data:
+    main genre processing function: creates row of genre data for anime in animeQuery. since this is categorical data we
+    are implementing genres as dummy variables.
+    :param animeQuery: GraphQL json of anime search results
+    :param data: Data class that is storing tables
     """
     animesGenres: list = [0 * n for n in range(19)]
-    animesGenres[0] = animeData['media']['id']
-    genres: list = animeData['media']['genres']
+    animesGenres[0] = animeQuery['media']['id']
+    genres: list = animeQuery['media']['genres']
     for iterate, g in enumerate(
             ['anime_id', 'Action', 'Adventure', 'Comedy', 'Drama', 'Ecchi', 'Sci-Fi', 'Fantasy', 'Horror',
              'Mahou_Shoujo', 'Mecha', 'Music', 'Mystery', 'Psychological', 'Romance', 'Slice of Life', 'Sports',
@@ -132,11 +137,19 @@ def processGenre(animeData: dict, data: Data) -> None:
     data.appendGenre(animesGenres)
 
 
-def processFormat(animeData: dict, data: Data) -> None:
+def processFormat(animeQuery: dict, data: Data) -> None:
+    """
+    main format processing function: creates row of format data for anime in animeQuery. since this is categorical data
+    we are implementing format as dummy variables. however, an anime can only have one format, so this might be more
+    than necessary.
+    :param animeQuery: GraphQL JSON of anime search results
+    :param data: Data class that is storing tables
+    :return:
+    """
     formats: list = ['anime_id', 'TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA', 'MUSIC']
     row: list = [0 * n for n in range(8)]
-    row[0] = animeData['media']['id']
-    entryFormat: str = animeData['media']['format']
+    row[0] = animeQuery['media']['id']
+    entryFormat: str = animeQuery['media']['format']
     row[formats.index(entryFormat)] = 1
     data.appendFormat(row)
 
