@@ -32,7 +32,6 @@ class Data:
         """
         add row to Data.formatData
         :param row: row of data
-        :return:
         """
         self.formatData.append(row)
 

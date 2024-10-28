@@ -116,7 +116,6 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
     """
     response: requests.Response
     searchResults: dict
-    animeLists: list
     query: str = ""
     varString: str = ""
     match kind:
@@ -135,10 +134,9 @@ def get(kind: str, queryVariable: str | int, rateLimit: bool = True) -> dict:
         case 'NewAnimeID':
             query = QUERY_NEW_ANIME
             varString = 'id'
-    # TODO: Refactor this library now that QUERY_NEW_ANIME is here
     if rateLimit:
         time.sleep(2)
-    response = requests.post(QUERY_URL, json={'query': query, 'variables': {varString: queryVariable}})
+    response = requests.post(QUERY_URL, json={'query': query, 'variables': {varString: queryVariable}}, timeout=5)
     searchResults = response.json()
     if rateLimitHit(searchResults):
         print('hit the rate limit, try again')
