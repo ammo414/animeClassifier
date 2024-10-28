@@ -86,5 +86,3 @@ if __name__ == '__main__':
             log_queried_date()
         else:
             print("Model Not Out of Date; No Need to Retrain")
-
-

@@ -16,18 +16,12 @@ def loadFromCSV(filename: str) -> pd.DataFrame:
 def createFullDF():
     allJoiningCSVs = ["formatDF", "genreDF", "directorDF"]
     animeDF = loadFromCSV("animeDF")
-    formatDF = loadFromCSV("formatDF")
-    genreDF = loadFromCSV("genreDF")
-    directorDF = loadFromCSV("directorDF")
-    joiningDataFrames = [formatDF, genreDF, directorDF]
     joiningDataFrames = [loadFromCSV(csv) for csv in allJoiningCSVs]
     mergePoints = ["anime_id", "anime_id", "director_id"]  # columns to "join" on
     return joinDF(animeDF, joiningDataFrames, mergePoints)
 
 
-def joinDF(
-    baseDF: pd.DataFrame, joins: list, mergePoints: list
-) -> pd.DataFrame:
+def joinDF(baseDF: pd.DataFrame, joins: list, mergePoints: list) -> pd.DataFrame:
     """
     inner joins/merges a bunch of DataFrames and drops any rows with None values.
     :param baseDF: starting DF. since these are inner joins rather than left joins, order shouldn't matter.
@@ -37,6 +31,6 @@ def joinDF(
     """
     if len(joins) == 0:
         return baseDF.dropna()
-    
+
     fullDF = pd.merge(baseDF, joins[0], how="inner", on=mergePoints[0])
     return joinDF(fullDF, joins[1:], mergePoints[1:])

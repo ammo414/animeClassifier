@@ -5,7 +5,7 @@ from DataGatherAndClean.GraphQLQueries import get
 class Data:
     """
     maintains all relevant data related to anime and stores them in one of a few lists. Offers functions to access and
-    update these lists. also offers a function to handle reattempting getting and saving director data.
+    update these lists. Also offers a function to handle reattempting getting and saving director data.
     """
     def __init__(self, username: str):
         self.username: str = username
@@ -151,4 +151,3 @@ def processFormat(animeQuery: dict, data: Data) -> None:
     entryFormat: str = animeQuery['media']['format']
     row[formats.index(entryFormat)] = 1
     data.appendFormat(row)
-

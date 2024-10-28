@@ -73,7 +73,7 @@ def calculateDoILikeDirector(directorsWorks: list, animeDF: pd.DataFrame) -> int
     gets percentage of anime (aka work) I like by the director
     :param directorsWorks: list of works by the director
     :param animeDF: animeDF with columns ['anime_id'] and ['score']
-    :return: number between 0 and 100m, inclusive, calculated by (number of works I liked/total number of works)
+    :return: number between 0 and 100, inclusive, calculated by (number of works I liked/total number of works)
     """
     didILike = []
     for work in directorsWorks:
