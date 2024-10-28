@@ -1,6 +1,7 @@
+from statistics import mean
+
 import pandas as pd
 
-from statistics import mean
 from DataGatherAndClean.GraphQLQueries import get
 
 
@@ -64,8 +65,7 @@ def calculateDirectorsMeanScore(worksScores: list) -> int:
     worksScores = [s for s in worksScores if s is not None]
     if len(worksScores) > 0:
         return int(mean(worksScores))
-    else:
-        return 0
+    return 0
 
 
 def calculateDoILikeDirector(directorsWorks: list, animeDF: pd.DataFrame) -> int:
@@ -85,8 +85,7 @@ def calculateDoILikeDirector(directorsWorks: list, animeDF: pd.DataFrame) -> int
                 didILike.append(0)
     if len(didILike) > 0:
         return int(mean(didILike)*100)
-    else:
-        return 0
+    return 0
 
 
 def findDirector(entry: dict) -> int | None:
@@ -126,11 +125,7 @@ def isDirectorInDF(directorId: int, directorDF: pd.DataFrame) -> bool:
     :return:
     """
 
-    if directorId in directorDF['director_id'].array:
-        return True
-
-    else:
-        return False
+    return directorId in directorDF['director_id'].array
 
 
 def pullDirectorStatsFromDF(directorId: int, directorDF: pd.DataFrame) -> list:
