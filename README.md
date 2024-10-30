@@ -5,7 +5,7 @@ I query my profile with [AniLits's GraphQL API](https://github.com/AniList/ApiV2
 ## DataGatherAndClean
 I store all used queries as strings in `GraphQLQueries` as well as a function, `get` that takes care of figuring out the right query string to use, rate limiting issues, and unpacking the response JSON. Since, outside of username, this program never asks for user input, I'm not too worried about GraphQL injection issues, though it can theoretically be a concern.
 
-I also use director data as a feature. This one is complicated: since just using the director's ID is oftentimes pointless, I look at the anime that the director directed and see if I like any of them. If I like most of the anime that they directed, then I will say that I like them. I also create a column of the mean of the mean scores of all the anime they directed. This way, even if I never watched a show directed by them, I can still gleam insight into how much I might like their shows.
+I also use director data as a feature. This one is complicated: since just using the director's ID is pointless, I look at the anime that the director directed and see if I like any of them. If I like most of the anime that they directed, then I will say that I like the director. I also create a column of the mean of the mean scores of all the anime they directed. This way, even if I never watched a show directed by them, I can still gleam insight into how much I might like their shows.
 
 I decided on looking at the anime's format, genre, year released, and mean score for future predictions.
 
