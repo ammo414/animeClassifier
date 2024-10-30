@@ -6,6 +6,10 @@ import pandas as pd
 from DataGatherAndClean import processGraph, directorHandling, animeData
 from DataTrainAndTest import buildModels
 from DeployModel import httpServer
+try:
+    from constants import USERNAME
+except ModuleNotFoundError:
+    USERNAME = None
 
 
 def mainDataPrep(username: str) -> None:
@@ -62,7 +66,10 @@ if __name__ == '__main__':
         httpServer.mainCall()
     else:
         if out_of_date():
-            mainDataPrep('wannabe414')
+            userName = USERNAME
+            if userName is None:
+                userName = input("Username?:\n")
+            mainDataPrep('userName')
             buildModels.mainTrainModels()
             log_queried_date()
         else:
