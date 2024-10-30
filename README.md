@@ -1,6 +1,6 @@
 I like watching anime. I've watched a lot of anime and documented that data in AniList. I'd like to watch more but struggle to reliably find shows I like. So I created this machine learning pipeline!
 
-I query my profile with [AniLits's GraphQL API](https://github.com/AniList/ApiV2-GraphQL-Docs), store the data in a pandas dataframe, and train an ensemble consisting of alogistic classifier a random forest on the data to predict if I will like a given show. I implemented a basic API with Flask (not public, sorry) so that I can query the model whenever.
+I query my profile with [AniLits's GraphQL API](https://github.com/AniList/ApiV2-GraphQL-Docs), store the data in a pandas dataframe, and train an ensemble consisting of a logistic classifier and a random forest on the data to predict if I will like a given show. I implemented a basic API with Flask (not public, sorry) so that I can query the model whenever.
 
 ## DataGatherAndClean
 I store all used queries as strings in `GraphQLQueries` as well as a function, `get` that takes care of figuring out the right query string to use, rate limiting issues, and unpacking the response JSON. Since, outside of username, this program never asks for user input, I'm not too worried about GraphQL injection issues, though it can theoretically be a concern.
