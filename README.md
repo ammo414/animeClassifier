@@ -15,7 +15,7 @@ I used scikit-learn to train my models on the above features. Since, when queryi
 ## DeployModel
 Using Flask, I implented a basic API (still in debug mode) so that I can give my app either an animeID or an AniList URL or an anime title and get a prediction. So far, I've agreed with the predictions! Since the focus of this project was not on learning how to implement a server, this part is very unpolished and will likely stay that way.
 
-TODO:
+# TODO:
 - [ ] Better document the model development process/ showcase my EDA.
 
 - [ ] Implement SQL database instead of using .CSVs.
