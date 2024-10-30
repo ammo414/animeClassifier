@@ -138,3 +138,14 @@ def pullDirectorStatsFromDF(directorId: int, directorDF: pd.DataFrame) -> list:
     d_doILike = directorDF.loc[directorDF['director_id'] == directorId, 'd_do_I_like'].iloc[0]
     d_meanScore = directorDF.loc[directorDF['director_id'] == directorId, 'd_mean_score'].iloc[0]
     return [d_doILike, d_meanScore]
+
+
+def finalizeDirectorDF(animeDF: pd.DataFrame):
+    directorDF: pd.DataFrame = buildDirectorDF(animeDF)
+
+    d_MeanScores, d_DoILike = calculateDirectorStats(directorDF['director_id'], animeDF)
+    directorDF['d_mean_score'] = d_MeanScores
+    directorDF['d_do_I_like'] = d_DoILike
+
+    return directorDF
+
