@@ -166,6 +166,7 @@ def processFormat(animeJSON: dict) -> dict:
     formatDct[animesFormat] = 1
     return formatDct
 
+
 def mainCall():
     app: Flask = Flask(__name__)
     stackedDirModel: StackingClassifier = load_model("dirClassifier")
@@ -206,6 +207,7 @@ def mainCall():
         return jsonify(retJSON)
 
     app.run(debug=True, port=8414)
+
 
 if __name__ == "__main__":
     mainCall()

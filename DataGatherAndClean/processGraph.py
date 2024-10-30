@@ -67,6 +67,7 @@ def processFormat(animeQuery: dict, data: Data) -> None:
     row[formats.index(entryFormat)] = 1
     data.appendFormat(row)
 
+
 def getAllData(username: str) -> Data:
     userData = Data(username)
     results: dict = get('AnimeLists', username, False)

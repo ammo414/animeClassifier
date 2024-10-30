@@ -56,7 +56,6 @@ def log_queried_date():
         file.write("\n" + str(today.strftime("%Y,%m,%d")))
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     run_server = input("Run Server?: (y/n). If n, then trains models.\n")
     if "y" in run_server.lower():
