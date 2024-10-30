@@ -9,6 +9,8 @@ I also use director data as a feature. This one is complicated: since just using
 
 I decided on looking at the anime's format, genre, year released, and mean score for future predictions.
 
+Since genre and format are categorical, I manually dummy variabled them. I didn't realize pandas had a dummy variable function when I wrote that, but it works well and the code looks nice so I'll keep it.
+
 ## DataTrainAndTest
 I used scikit-learn to train my models on the above features. Since, when querying for a new anime, there's no guarantee that Director data will exist, I had to create two ensembles: one with director data and one without. I pickled the models so that I could pick up again the models at any point in the future. 
 
