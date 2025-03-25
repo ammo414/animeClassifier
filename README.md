@@ -22,4 +22,4 @@ Using Flask, I implented a basic API (still in debug mode) so that I can give my
 
 - [ ] Implement SQL database instead of using .CSVs.
 
-- [ ] Implement a way to continously improve the model -- introduce continous injestion of new ratings (once a quarter?) and retrain the model with that new data. 
+- [x] Implement a way to continously improve the model -- introduce continous injestion of new ratings (once a quarter?) and retrain the model with that new data. 
