@@ -18,11 +18,11 @@ pathspec==0.12.1
 platformdirs==4.3.6
 python-dateutil==2.9.0.post0
 pytz==2024.2
-requests==2.32.3
+requests==2.32.4
 scikit-learn==1.5.2
 scipy==1.14.1
 six==1.16.0
 threadpoolctl==3.5.0
 tzdata==2024.2
-urllib3==2.2.3
+urllib3==2.5.0
 Werkzeug==3.0.6
